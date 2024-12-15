@@ -1,0 +1,25 @@
+# Build Folders
+bin/
+obj/
+
+# User-Specific Files
+*.user
+*.userosscache
+*.suo
+
+# IDE Folders
+.idea/
+.vscode/
+
+# Logs and Temporary Files
+*.log
+*.tmp
+
+# ASP.NET Temporary Files
+.DS_Store
+*.vspscc
+*.vssscc
+
+# Configuration and Secrets
+appsettings.*.json
+secrets.json
