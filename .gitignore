@@ -23,3 +23,41 @@ obj/
 # Configuration and Secrets
 appsettings.*.json
 secrets.json
+
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Vite
+dist/
+*.local
+
+# Logs
+logs/
+
+# Editor Directories and Files
+*.ntvs*
+*.njsproj
+*.sln
+
+# System Files
+Thumbs.db
+
+# Environment Files
+.env
+.env.local
+.env.*.local
+
+# Build Artifacts
+*.out
+*.build
+
+# Dependency Lock Files (if applicable, depending on your package manager)
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Miscellaneous
+coverage/
