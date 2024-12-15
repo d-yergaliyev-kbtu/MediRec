@@ -61,3 +61,16 @@ pnpm-lock.yaml
 
 # Miscellaneous
 coverage/
+
+logs
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+*.sw?
