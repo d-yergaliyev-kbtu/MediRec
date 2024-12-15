@@ -56,7 +56,7 @@ Thumbs.db
 
 # Dependency Lock Files (if applicable, depending on your package manager)
 package-lock.json
-yarn.lock
+yarn.locks
 pnpm-lock.yaml
 
 # Miscellaneous
