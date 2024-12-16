@@ -26,7 +26,7 @@ public class DrugController : ControllerBase
         pageRequest.SortColumn ??= "reviewsCount";
         pageRequest.SortDirection ??= "desc";
         
-        var result = _drugRepository.GetDrugsWithReviewCountsAsync(pageRequest);
+        var result = _drugRepository.GetDrugs(pageRequest);
         return Ok(result);
     }
 

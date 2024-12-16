@@ -1,14 +1,14 @@
 ﻿import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
-import { Drug } from "../types/Drug.tsx";
+import { DrugModel } from "../types/DrugModel.tsx";
 import { API_ENDPOINTS } from "../config/api.ts";
 import BackButton from "../components/BackButton.tsx";
 import DrugReviews from "../components/DrugReviews.tsx";
 
 function DrugDetailPage() {
     const { id } = useParams<{ id: string }>(); // Retrieve the 'id' parameter from the URL
-    const [drug, setDrug] = useState<Drug | null>(null);
+    const [drug, setDrug] = useState<DrugModel | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
 
@@ -57,6 +57,7 @@ function DrugDetailPage() {
                     <ul className="mt-4 space-y-2">
                         <li><strong>ID:</strong> {drug.id}</li>
                         <li><strong>Reviews Count:</strong> {drug.reviewsCount}</li>
+                        <li><strong>Average Rating:</strong> {parseFloat(drug.averageRating.toFixed(2))}</li>
                     </ul>
                 </div>
             </div>

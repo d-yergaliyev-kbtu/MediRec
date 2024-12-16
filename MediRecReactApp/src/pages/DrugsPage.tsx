@@ -1,16 +1,18 @@
 ﻿import {useEffect, useState} from "react";
-import {Drug} from "../types/Drug.tsx";
+import {DrugModel} from "../types/DrugModel.tsx";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import {API_ENDPOINTS} from "../config/api.ts";
+import PageNumbers from "../components/PageNumbers.tsx";
+import PageSizeSelector from "../components/PageSizeSelector.tsx";
 
 function DrugsPage() {
     const navigate = useNavigate();
-    const [data, setData] = useState<Drug[]>([]);
+    const [data, setData] = useState<DrugModel[]>([]);
     const [pageNumber, setPageNumber] = useState(1);
     const [pageSize, setPageSize] = useState(15);
     const [totalPages, setTotalPages] = useState(1);
-    const [sortColumn, setSortColumn] = useState<keyof Drug | null>('reviewsCount');
+    const [sortColumn, setSortColumn] = useState<keyof DrugModel | null>('reviewsCount');
     const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
     const [searchQuery, setSearchQuery] = useState<string>("");
 
@@ -31,7 +33,7 @@ function DrugsPage() {
         fetchData();
     }, [pageNumber, pageSize, sortColumn, sortDirection, searchQuery]);
 
-    const handleSort = (column: keyof Drug) => {
+    const handleSort = (column: keyof DrugModel) => {
         if (sortColumn === column) {
             setSortDirection((prev) => (prev === "asc" ? "desc" : "asc"));
         } else {
@@ -46,48 +48,9 @@ function DrugsPage() {
         }
     };
 
-    const handlePageSizeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const value = parseInt(event.target.value, 10);
-        if (value > 0) { // Ensure pageSize is a positive number
-            setPageSize(value);
-            setPageNumber(1); // Reset to the first page when pageSize changes
-        }
-    };
-
     const handleSearchQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setSearchQuery(event.target.value);
         setPageNumber(1);
-    };
-
-    const renderPageNumbers = () => {
-        const pages = [];
-
-        if (pageNumber > 1) {
-            pages.push(pageNumber - 1, pageNumber - 1);
-        }
-
-        pages.push(pageNumber);
-
-        for (let i = 1; i <= 3; i++) {
-            if (pageNumber + i <= totalPages) {
-                pages.push(pageNumber + i);
-            }
-        }
-
-        if (pageNumber + 3 < totalPages) {
-            pages.push("...");
-            pages.push(totalPages);
-        }
-
-        return pages
-            .filter((page, index, self) => self.indexOf(page) === index && typeof page === "number")
-            .map((page) => (
-                <button key={page} onClick={() => handlePageChange(page as number)}
-                        className={`p-2 text-blue-500 text-lg cursor-pointer hover:bg-gray-300 hover:underline
-                        ${page === pageNumber ? 'font-bold underline' : ''}`}>
-                    {page}
-                </button>
-            ));
     };
 
     return (
@@ -103,12 +66,24 @@ function DrugsPage() {
                     />
                 </div>
 
+                {data.length <= 15 ?
+                    (<></>) :
+                    (
+                        <div className="flex mb-3 items-center justify-between">
+                            <PageNumbers pageNumber={pageNumber} totalPages={totalPages}
+                                         onPageChange={handlePageChange}/>
+                            <PageSizeSelector pageSize={pageSize}
+                                              onPageSizeChange={(pageSize) => setPageSize(pageSize)}/>
+                        </div>
+                    )
+                }
+
                 <table className={``}>
                     <thead>
                     <tr>
                         <th className={`px-4 min-w-96 text-left py-2 text-xl`}
                             onClick={() => handleSort("name")} style={{cursor: "pointer"}}>
-                            Drug Name {sortColumn === "name" ? (sortDirection === "asc" ? "\u2191" : "\u2193") : null}
+                        Drug Name {sortColumn === "name" ? (sortDirection === "asc" ? "\u2191" : "\u2193") : null}
                         </th>
                         <th className={`px-4 text-left py-2 text-xl`}
                             onClick={() => handleSort("reviewsCount")} style={{cursor: "pointer"}}>
@@ -127,21 +102,10 @@ function DrugsPage() {
                     ))}
                     </tbody>
                 </table>
+
                 <div className="flex mt-3 items-center justify-between">
-                    <div className="flex space-x-2">{renderPageNumbers()}</div>
-                    <div>
-                        <label htmlFor="pageSize" className="mr-2 text-lg">
-                            Page Size:
-                        </label>
-                        <input
-                            id="pageSize"
-                            type="number"
-                            value={pageSize}
-                            onChange={handlePageSizeChange}
-                            className="p-2 border border-gray-300 rounded w-20 text-center"
-                            min={1}
-                        />
-                    </div>
+                    <PageNumbers pageNumber={pageNumber} totalPages={totalPages} onPageChange={handlePageChange}/>
+                    <PageSizeSelector pageSize={pageSize} onPageSizeChange={(pageSize) => setPageSize(pageSize)}/>
                 </div>
             </div>
         </div>

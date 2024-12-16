@@ -16,18 +16,26 @@ public class DrugRepository
 
     public DrugModel? GetDrugById(int id)
     {
-        return _context.Drugs
+        var drug = _context.Drugs
             .Where(x => x.Id == id)
             .Select(drug => new DrugModel
             {
                 Id = drug.Id,
                 Name = drug.Name,
-                ReviewsCount = _context.DrugReviews.Count(review => review.DrugId == drug.Id)
             })
             .FirstOrDefault();
+
+        if (drug != null)
+        {
+            var reviews = _context.DrugReviews.Where(review => review.DrugId == drug.Id);
+            drug.ReviewsCount = reviews.Count();
+            drug.AverageRating = reviews.Average(review => review.Rating);
+        }
+        
+        return drug;
     }
     
-    public PaginationResult<DrugModel> GetDrugsWithReviewCountsAsync(BasePageRequest pageRequest)
+    public PaginationResult<DrugModel> GetDrugs(BasePageRequest pageRequest)
     {
         var query = _context.Drugs
             .Select(drug => new DrugModel

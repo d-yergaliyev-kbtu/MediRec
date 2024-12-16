@@ -1,4 +1,4 @@
-﻿export type DrugReview = {
+﻿export type DrugReviewModel = {
     id: number;
     drugName: string;
     condition: string;

@@ -1,17 +1,30 @@
 ﻿import {useEffect, useState} from "react";
-import {DrugReview} from "../types/DrugReview.tsx";
+import {DrugReviewModel} from "../types/DrugReviewModel.tsx";
 import axios from "axios";
 import {API_ENDPOINTS} from "../config/api.ts";
+import DrugReviewCard from "./DrugReviewCard.tsx";
+import PageNumbers from "./PageNumbers.tsx";
+import PageSizeSelector from "./PageSizeSelector.tsx";
+import SortSelector, {SortOption} from "./SortSelector.tsx";
+
+const sortOptions: SortOption[] = [
+    { label: "Most Recent", value: { sortColumn: "date", sortDirection: "desc" } },
+    { label: "Oldest", value: { sortColumn: "date", sortDirection: "asc" } },
+    { label: "Higher Rating", value: { sortColumn: "rating", sortDirection: "desc" } },
+    { label: "Lower Rating", value: { sortColumn: "rating", sortDirection: "asc" } },
+];
 
 type PaginatedDrugReviewsProps = {
     drugId: number;
 };
 
 function DrugReviews({ drugId }: PaginatedDrugReviewsProps) {
-    const [reviews, setReviews] = useState<DrugReview[]>([]);
+    const [reviews, setReviews] = useState<DrugReviewModel[]>([]);
     const [pageNumber, setPageNumber] = useState(1);
     const [pageSize, setPageSize] = useState(10);
     const [totalPages, setTotalPages] = useState(1);
+    const [sortColumn, setSortColumn] = useState<string>("date");
+    const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
     const [loading, setLoading] = useState<boolean>(true);
 
     useEffect(() => {
@@ -22,6 +35,8 @@ function DrugReviews({ drugId }: PaginatedDrugReviewsProps) {
                     params: {
                         pageNumber,
                         pageSize,
+                        sortColumn,
+                        sortDirection
                     },
                 });
                 setReviews(response.data.items);
@@ -36,7 +51,7 @@ function DrugReviews({ drugId }: PaginatedDrugReviewsProps) {
         if (drugId) {
             fetchReviews();
         }
-    }, [drugId, pageNumber, pageSize]);
+    }, [drugId, pageNumber, pageSize, sortColumn, sortDirection]);
 
     const handlePageChange = (page: number) => {
         if (page >= 1 && page <= totalPages) {
@@ -44,38 +59,25 @@ function DrugReviews({ drugId }: PaginatedDrugReviewsProps) {
         }
     };
 
-    const renderPageNumbers = () => {
-        const pages = [];
-        if (pageNumber > 1) {
-            pages.push(pageNumber - 1);
-        }
-        pages.push(pageNumber);
-        for (let i = 1; i <= 3; i++) {
-            if (pageNumber + i <= totalPages) {
-                pages.push(pageNumber + i);
-            }
-        }
-        if (pageNumber + 3 < totalPages) {
-            pages.push("...");
-            pages.push(totalPages);
-        }
-
-        return pages.map((page, index) => (
-            <button
-                key={index}
-                onClick={() => handlePageChange(page as number)}
-                className={`p-2 text-blue-500 cursor-pointer hover:bg-gray-300 ${
-                    page === pageNumber ? "font-bold underline" : ""
-                }`}
-            >
-                {page}
-            </button>
-        ));
+    const handleSortChange = (column: string, direction: "asc" | "desc") => {
+        setSortColumn(column);
+        setSortDirection(direction);
+        setPageNumber(1); // Reset to the first page on sort change
     };
 
     return (
-        <div className="mt-6">
+        <div className="mt-6 w-2/3">
             <h2 className="text-2xl font-semibold mb-4">Drug Reviews</h2>
+
+            <div className="flex justify-between items-center mb-4">
+                <PageNumbers pageNumber={pageNumber} totalPages={totalPages} onPageChange={handlePageChange}/>
+
+                <div className={`flex gap-4`}>
+                    <SortSelector sortOptions={sortOptions} selectedSort={{ sortColumn, sortDirection }} onSortChange={handleSortChange}/>
+                    <PageSizeSelector pageSize={pageSize} onPageSizeChange={(pageSize) => setPageSize(pageSize)}/>
+                </div>
+            </div>
+
             {loading ? (
                 <div>Loading reviews...</div>
             ) : reviews.length === 0 ? (
@@ -83,32 +85,18 @@ function DrugReviews({ drugId }: PaginatedDrugReviewsProps) {
             ) : (
                 <div className="space-y-4">
                     {reviews.map((review) => (
-                        <div key={review.id} className="p-4 border border-gray-300 rounded shadow-sm">
-                            <div className="text-sm text-gray-500 mb-2">
-                                {new Date(review.date).toLocaleDateString()}
-                            </div>
-                            <div className="text-gray-800">{review.review}</div>
-                            <div className="mt-2 text-right text-blue-600">
-                                Rating: <strong>{review.rating}</strong>
-                            </div>
-                        </div>
+                        <DrugReviewCard key={review.id} review={review}/>
                     ))}
                 </div>
             )}
+
             <div className="flex justify-between items-center mt-4">
-                <div className="flex space-x-2">{renderPageNumbers()}</div>
-                <div>
-                    <label htmlFor="pageSize" className="mr-2">
-                        Page Size:
-                    </label>
-                    <input
-                        id="pageSize"
-                        type="number"
-                        min="1"
-                        value={pageSize}
-                        onChange={(e) => setPageSize(parseInt(e.target.value, 10))}
-                        className="p-1 border border-gray-300 rounded w-20 text-center"
-                    />
+                <PageNumbers pageNumber={pageNumber} totalPages={totalPages} onPageChange={handlePageChange}/>
+
+                <div className={`flex gap-4`}>
+                    <SortSelector sortOptions={sortOptions} selectedSort={{sortColumn, sortDirection}}
+                                  onSortChange={handleSortChange}/>
+                    <PageSizeSelector pageSize={pageSize} onPageSizeChange={(pageSize) => setPageSize(pageSize)}/>
                 </div>
             </div>
         </div>
