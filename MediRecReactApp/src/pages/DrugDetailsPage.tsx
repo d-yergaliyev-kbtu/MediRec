@@ -5,6 +5,7 @@ import { DrugModel } from "../types/DrugModel.tsx";
 import { API_ENDPOINTS } from "../config/api.ts";
 import BackButton from "../components/BackButton.tsx";
 import DrugReviews from "../components/DrugReviews.tsx";
+import DrugReviewsSummary from "../components/DrugReviewsSummary.tsx";
 
 function DrugDetailPage() {
     const { id } = useParams<{ id: string }>(); // Retrieve the 'id' parameter from the URL
@@ -50,19 +51,13 @@ function DrugDetailPage() {
 
             <h1 className="my-8 text-5xl font-bold mb-4">{drug.name}</h1>
 
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                    <h2 className="text-2xl font-semibold">Details</h2>
-                    <ul className="mt-4 space-y-2">
-                        <li><strong>ID:</strong> {drug.id}</li>
-                        <li><strong>Reviews Count:</strong> {drug.reviewsCount}</li>
-                        <li><strong>Average Rating:</strong> {parseFloat(drug.averageRating.toFixed(2))}</li>
-                    </ul>
-                </div>
+            <div className="mt-8 mb-12 text-xl text-blue-600">
+                Rating: <strong>{parseFloat(drug.averageRating.toFixed(2))} / 10</strong>
             </div>
 
-            <DrugReviews drugId={parseInt(id || "0", 10)} />
+            <DrugReviewsSummary drugId={parseInt(id || "0", 10)}/>
+
+            <DrugReviews drugId={parseInt(id || "0", 10)} reviewsCount={drug.reviewsCount}/>
         </div>
     );
 }

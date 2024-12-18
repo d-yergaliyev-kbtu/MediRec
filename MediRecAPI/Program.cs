@@ -1,14 +1,17 @@
 using MediRecAPI.Data;
 using MediRecAPI.Data.DataSeed;
 using MediRecAPI.Data.Repositories;
+using MediRecAPI.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddHttpClient();
 builder.Services.AddScoped<DrugRepository>();
 builder.Services.AddScoped<DrugReviewRepository>();
+builder.Services.AddScoped<DrugService>();
 
 builder.Services.AddControllers();
 

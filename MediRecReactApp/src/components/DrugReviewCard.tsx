@@ -17,7 +17,7 @@ function DrugReviewCard({ review }: DrugReviewCardProps) {
             <div className="text-gray-800">{review.review}</div>
 
             <div className="mt-2 text-right text-blue-600">
-                Rating: <strong>{parseFloat(review.rating.toFixed(2))}</strong>
+                Rating: <strong>{parseFloat(review.rating.toFixed(2))} / 10</strong>
             </div>
         </div>
     );

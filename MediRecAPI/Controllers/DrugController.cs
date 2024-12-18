@@ -1,6 +1,6 @@
 ﻿using MediRecAPI.Data.Repositories;
-using MediRecAPI.Models;
 using MediRecAPI.RequestModels;
+using MediRecAPI.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MediRecAPI.Controllers;
@@ -11,13 +11,16 @@ public class DrugController : ControllerBase
 {
     private readonly DrugRepository _drugRepository;
     private readonly DrugReviewRepository _drugReviewRepository;
+    private readonly DrugService _drugService;
 
     public DrugController(
         DrugRepository drugRepository, 
-        DrugReviewRepository drugReviewRepository)
+        DrugReviewRepository drugReviewRepository, 
+        DrugService drugService)
     {
         _drugRepository = drugRepository;
         _drugReviewRepository = drugReviewRepository;
+        _drugService = drugService;
     }
 
     [HttpGet("List")]
@@ -50,5 +53,12 @@ public class DrugController : ControllerBase
         
         var reviews = _drugReviewRepository.GetDrugReviews(id, pageRequest); 
         return Ok(reviews);
+    }
+
+    [HttpGet("{id:int}/Reviews/Summary")]
+    public async Task<IActionResult> GetDrugReviewsSummary(int id, CancellationToken cancellationToken)
+    {
+        var summary = await _drugService.GetDrugReviewsSummaryAsync(id, cancellationToken);
+        return Ok(summary);
     }
 }

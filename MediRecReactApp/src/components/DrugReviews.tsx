@@ -16,9 +16,10 @@ const sortOptions: SortOption[] = [
 
 type PaginatedDrugReviewsProps = {
     drugId: number;
+    reviewsCount: number;
 };
 
-function DrugReviews({ drugId }: PaginatedDrugReviewsProps) {
+function DrugReviews({ drugId, reviewsCount }: PaginatedDrugReviewsProps) {
     const [reviews, setReviews] = useState<DrugReviewModel[]>([]);
     const [pageNumber, setPageNumber] = useState(1);
     const [pageSize, setPageSize] = useState(10);
@@ -66,8 +67,11 @@ function DrugReviews({ drugId }: PaginatedDrugReviewsProps) {
     };
 
     return (
-        <div className="mt-6 w-2/3">
-            <h2 className="text-2xl font-semibold mb-4">Drug Reviews</h2>
+        <div className="mt-6 xl:w-2/3 lg:w-full">
+            <div className={`flex gap-2 items-top`}>
+                <span className="text-2xl font-semibold mb-4">Reviews</span>
+                <span className={`text-2xl text-gray-500`}>{reviewsCount}</span>
+            </div>
 
             <div className="flex justify-between items-center mb-4">
                 <PageNumbers pageNumber={pageNumber} totalPages={totalPages} onPageChange={handlePageChange}/>
